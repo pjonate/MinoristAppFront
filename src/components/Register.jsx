@@ -9,8 +9,6 @@ const Register = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({});
-  const [showWelcome, setShowWelcome] = useState(false);
-  const [fadeOutWelcome, setFadeOutWelcome] = useState(false);
 
   const navigate = useNavigate();
 
@@ -55,19 +53,8 @@ const Register = () => {
       
         alert('✅ Usuario registrado con éxito');
         console.log(response.data);
+        navigate("/welcome");
         // Si llega aquí, el registro fue exitoso
-
-        setShowWelcome(true);
-
-        setTimeout(() => {
-          setFadeOutWelcome(true);
-        }, 2500);
-
-        setTimeout(() => {
-          setShowWelcome(false);
-          // Redirigir, limpiar formulario, etc.
-          navigate("/");
-        }, 4000);
       } catch(error){
         console.error(error);
         alert('❌ Error al registrar');
@@ -77,13 +64,6 @@ const Register = () => {
 
   return (
 
-    <>
-    {/*amimation*/}
-    {showWelcome ? (
-      <div className={`welcome-overlay ${fadeOutWelcome ? "fade-out" : "fade-in"}`}>
-        <h1 className="welcome-text">Bienvenidos</h1>
-      </div>
-    ) : (
       <div className="container-fluid bg-light vh-100">
         {/* Flecha hacia atrás */}
         <Link to="/" className="position-absolute top-0 start-0 m-4 text-white fs-4">
@@ -151,8 +131,6 @@ const Register = () => {
           <div className="col-2 d-none d-md-block bg-dark-blue h-100 p-0"></div>
         </div>
       </div>
-    )}
-    </>
   );
 };
 

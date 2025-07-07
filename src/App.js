@@ -1,9 +1,10 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation  } from 'react-router-dom';
 import { AnimatePresence } from "framer-motion";
 
 import React from 'react';
 import Login from './components/Login'; // Ajusta la ruta si tu archivo está en otra carpeta
 import Register from './components/Register';
+import Welcome from './components/Welcome';
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -11,9 +12,9 @@ function AnimatedRoutes() {
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
-        <Route path="/" element={<PantallaInicio />} />
+        <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/bienvenida" element={<PantallaBienvenida />} />
+        <Route path="/welcome" element={<Welcome />} />
       </Routes>
     </AnimatePresence>
   );
@@ -23,10 +24,7 @@ function AnimatedRoutes() {
 function App() {
   return (
     <Router>
-      <Routes>   {/* Aquí se envuelven todas las rutas */}
-        <Route path="/" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-      </Routes>
+      <AnimatedRoutes />
     </Router>
   );
 }
