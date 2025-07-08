@@ -51,8 +51,8 @@ const Register = () => {
           }
         });
       
-        alert('✅ Usuario registrado con éxito');
-        console.log(response.data);
+        //alert('✅ Usuario registrado con éxito');
+        //console.log(response.data);
         navigate("/welcome");
         // Si llega aquí, el registro fue exitoso
       } catch(error){
@@ -114,7 +114,7 @@ const Register = () => {
                 </div>
 
                 <button type="submit" className="btn btn-primary w-100">Registrarse</button>
-                <div className="text-center mb-3 text-muted">— o —</div>
+                {/*<div className="text-center mb-3 text-muted">— o —</div>
 
                 <button type="button" className="btn btn-outline-danger w-100 mb-2">
                   <i className="bi bi-google me-2"></i> Registrarse con Google
@@ -122,7 +122,7 @@ const Register = () => {
 
                 <button type="button" className="btn btn-outline-primary w-100">
                   <i className="bi bi-facebook me-2"></i> Registrarse con Facebook
-                </button>
+                </button>*/}
               </form>
             </div>
           </div>
