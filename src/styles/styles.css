@@ -1,0 +1,29 @@
+input{
+  border-radius: 16px !important;
+}
+
+select{
+  border-radius: 16px !important;
+}
+
+input::placeholder{
+  color:#000;
+}
+
+.welcome-text{
+  font-family: "Papyrus" !important; /*fuente*/
+  font-size: 48px;/*tamaño de letra*/
+  margin-bottom: 0.2rem;
+  font-style: italic;
+}
+
+.text-header{
+  font-family: "Century Gothic";
+  font-size: 38px;
+  color: white;
+  font-weight: bold;
+}
+
+.menu-button:hover{
+  background-color: #f2ffbd !important;/*es necesario important para aumentar su prioridad a la par de los elementos React*/
+}

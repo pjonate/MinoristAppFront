@@ -1,32 +1,35 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import "../styles/Register.css"
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
+import "../styles/styles.css";
+import { FaArrowLeft } from 'react-icons/fa';
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const Register = () => {
   const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
+  //const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
 
   const validate = () => {
     const newErrors = {};
 
-    if (!name.trim()) newErrors.name = 'El nombre es obligatorio';
+    if (!name.trim()) alert('El nombre es obligatorio');
 
-    if (!email.trim()) {
+    /*if (!email.trim()) {
       newErrors.email = 'El correo es obligatorio';
     } else if (!/^\S+@\S+\.\S+$/.test(email)) {
       newErrors.email = 'El correo no tiene un formato válido';
-    }
+    }*/
 
     if (!password) {
-      newErrors.password = 'La contraseña es obligatoria';
+      alert('La contraseña es obligatoria');
     } else if (password.length < 6) {
-      newErrors.password = 'La contraseña debe tener al menos 6 caracteres';
+      alert('La contraseña debe tener al menos 6 caracteres');
     }
 
     return newErrors;
@@ -42,7 +45,6 @@ const Register = () => {
       try {
         const response = await axios.post('/api/register', {
           name,
-          email,
           password
         }, {
           headers: {
@@ -53,7 +55,7 @@ const Register = () => {
       
         //alert('✅ Usuario registrado con éxito');
         //console.log(response.data);
-        navigate("/welcome");
+        navigate("/");
         // Si llega aquí, el registro fue exitoso
       } catch(error){
         console.error(error);
@@ -63,19 +65,141 @@ const Register = () => {
   };
 
   return (
+      <div>   
+        <header
+          style={{
+          backgroundColor: "#d7d428",
+          width: "100%",
+          height: "75px",
+          display: "flex",
+          alignItems: "center"
+        }}
+        >
+          <text
+            className='text-header'
+            style={{
+              padding:"0px 15px"
+            }}
+          >
+            MinoristApp
+          </text>
 
-      <div className="container-fluid bg-light vh-100">
-        {/* Flecha hacia atrás */}
-        <Link to="/" className="position-absolute top-0 start-0 m-4 text-white fs-4">
-          <i className="bi bi-arrow-left"></i>
-        </Link>
+          <FaArrowLeft 
+            size={36} 
+            style={{ 
+              cursor: "pointer", 
+              marginRight: "2rem", 
+              marginLeft: "auto",
+              color: "white",
+            }} 
+            onClick={() => window.history.back()} 
+          />
+        </header>     
 
-        <div className="row h-100">
+        <div style={{display:"flex"}}>
+          <aside style={{backgroundColor: "#e1e1e1", width: "180px", height: "calc(100vh - 75px)"}}></aside> 
+          
+          <main
+            style={{
+              flex:1,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              textAlign: "center"
+            }}
+          >
+            <div
+              style={{
+                //border: "2px solid black",
+                backgroundColor: "#ffffff",//color de fondo
+                borderRadius: "16px",//radio de las esqunasS
+                width: "400px",//ancho en pixeles
+                height: "300px",//altura en pixeles
+                textAlign: "center",//ubicacion por defecto de los elementos dentro del div, en este caso en el centro
+                boxShadow: "0 4px 24px rgba(0, 0, 0, 0.2)",//desplazameinto horizontal, desplazamiento vertical, cuanto se difumina, color
+              }}
+            >
+              <form
+                onSubmit={handleSubmit}
+                style={{
+                  paddingTop:"15px",
+                  display:"flex",
+                  flexDirection:"column",
+                  alignItems:"center",
+                  gap:"1rem"
+                }}
+              >
+                <h4>Crear sesión</h4>
+                <input
+                  type="text"
+                  name="user"
+                  placeholder='Nombre de usuario'
+                  style={{
+                    padding: "0px 15px", //espacio arriba 0px, hacia el lado 15px
+                    border: "None",
+                    backgroundColor:"#f5f5f3",
+                    borderRadius: "16px",
+                    width: "270px",
+                    height: "55px",
+                  }}
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
 
-          {/* Panel izquierdo azul */}
-          <div className="col-2 d-none d-md-block bg-dark-blue h-100 p-0"></div>
 
-          {/* Formulario centrado */}
+                <div style={{ position: "relative"}}>
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    placeholder='Contraseña'
+                    autoComplete="off" 
+                    style={{
+                      padding: "0px 15px", //espacio arriba 0px, hacia el lado 15px
+                      border: "None",
+                      backgroundColor:"#f5f5f3",
+                      borderRadius: "16px",
+                      width: "270px",
+                      height: "55px",
+                    }}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+
+                  <span
+                      onClick={() => setShowPassword(!showPassword)}
+                      style={{
+                          position: "absolute",
+                          right: "10px",
+                          top: "0",
+                          height: "100%",
+                          display: "flex",
+                          alignItems: "center",
+                          cursor: "pointer",
+                          color: "#555",
+                      }}
+                  >
+                  {showPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+                  </span>
+                </div>
+                <button
+                  type="submit"
+                  style={{
+                    width:"270px",
+                    height:"55px",
+                    borderRadius: "16px",
+                    border: "None",
+                    backgroundColor: "#ffb458"
+                  }}
+                >
+                  Registrarse
+                </button>
+              </form>  
+            </div>
+          </main>
+
+          <aside style={{backgroundColor: "#e1e1e1", width: "180px", height: "calc(100vh - 75px)"}}></aside> 
+
+          {/* Formulario centrado 
           <div className="col-12 col-md-8 d-flex justify-content-center align-items-center">
             <div className="bg-white p-5 rounded shadow w-100" style={{ maxWidth: '400px' }}>
               <h2 className="mb-4 text-center text-dark blue">Crear cuenta</h2>
@@ -114,22 +238,10 @@ const Register = () => {
                 </div>
 
                 <button type="submit" className="btn btn-primary w-100">Registrarse</button>
-                {/*<div className="text-center mb-3 text-muted">— o —</div>
-
-                <button type="button" className="btn btn-outline-danger w-100 mb-2">
-                  <i className="bi bi-google me-2"></i> Registrarse con Google
-                </button>
-
-                <button type="button" className="btn btn-outline-primary w-100">
-                  <i className="bi bi-facebook me-2"></i> Registrarse con Facebook
-                </button>*/}
               </form>
             </div>
-          </div>
-
-          {/* Panel derecho azul */}
-          <div className="col-2 d-none d-md-block bg-dark-blue h-100 p-0"></div>
-        </div>
+          </div> */}
+        </div>  
       </div>
   );
 };
