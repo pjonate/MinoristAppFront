@@ -5,6 +5,9 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import axios from 'axios';
+
+axios.defaults.withCredentials = true; // importante: permite enviar cookies
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

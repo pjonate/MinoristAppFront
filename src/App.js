@@ -9,18 +9,56 @@ import Venta from './components/erp/Venta';
 import Inventario from './components/erp/Inventario';
 import Reportes from './components/erp/Reportes';
 
+import ProtectedRoute from './components/ProtectedRoute';
+
 function AnimatedRoutes() {
   const location = useLocation();
 
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
+
+        {/* Rutas públicas */}
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/menu" element={<Menu />} />
-        <Route path="/venta" element={<Venta />} />
-        <Route path="/inventario" element={<Inventario />}></Route>
-        <Route path='/reportes' element={<Reportes/>}></Route>
+
+        {/* Rutas protegidas */}
+        <Route
+          path="/menu"
+          element={
+            <ProtectedRoute>
+              <Menu />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/venta"
+          element={
+            <ProtectedRoute>
+              <Venta />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/inventario"
+          element={
+            <ProtectedRoute>
+              <Inventario />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/reportes"
+          element={
+            <ProtectedRoute>
+              <Reportes />
+            </ProtectedRoute>
+          }
+        />
+
       </Routes>
     </AnimatePresence>
   );

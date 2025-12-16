@@ -1,33 +1,36 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
-import { FaArrowLeft } from 'react-icons/fa';
+import { useState, useEffect } from "react"; //useState es un hook que permite a los componentes funcionales renderizarse en función de los 
+//cambios en los estados (variables o espacios de memoria especiales dentro de un componente)
+//useEffect es un hook que se ejcuta despues de cada render que el componente haga
+import axios from "axios";//biblioteca de JS para realizar peticiones HTTP
+import { FaArrowLeft } from 'react-icons/fa';//icono de flecha de React
 
-const Inventario= () =>{
+const Inventario= () =>{//componente Inventario
 
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState([]);//Estado para productos, es una lista
+  
     useEffect(() => {
-        fetchProducts();
-    }, []);
+        fetchProducts();//Cada vez que se renderiza Inventario, se buscan los productos en la base de datos
+    }, []);//este useEffect solo se ejecuta en el render inicial
 
   const fetchProducts = async () => {
     try {
       const response = await axios.get("api/products");
-      setProducts(response.data); // guarda los productos en el estado
+      setProducts(response.data); // guarda los productos en el estado. Se renderiza el componente nuevamente
     } catch (error) {
       console.error("Error al obtener productos:", error);
     }
   };
 
-  const [codigo, setCodigo] = useState('');
-  const [descripcion, setDescripcion] = useState('');
-  const [categoria, setCategoria] = useState('');
-  const [proveedor, setProveedor] = useState('');
-  const [precio, setPrecio] = useState();
-  const [stock, setStock] = useState();
+  const [codigo, setCodigo] = useState('');//Estado para codgio, es una cadena
+  const [descripcion, setDescripcion] = useState('');//Estado para descripcion, es una cadena
+  const [categoria, setCategoria] = useState('');//estado para categoria, es una cadena
+  const [proveedor, setProveedor] = useState('');//estado para proveedor, es una cadena
+  const [precio, setPrecio] = useState();//estado para precio, esta vacios
+  const [stock, setStock] = useState();//estado para stock, esta vacio
 
-  const [modalOpen, setModalOpen] = useState(false);
-  const [productoEditando, setProductoEditando] = useState(null);
-  const [formData, setFormData] = useState({
+  const [modalOpen, setModalOpen] = useState(false);//estado modalOpen????, es un booleano
+  const [productoEditando, setProductoEditando] = useState(null);//estado para editar producto, esta vacio
+  const [formData, setFormData] = useState({//estado para formData, guarda los datos del producto
     codigo: "",
     descripcion: "",
     categoria: "",
@@ -38,11 +41,11 @@ const Inventario= () =>{
 
 
 
-  const handleSubmit = async(e)=>{
+  const handleSubmit = async(e)=>{//controlador de boton "Aceptar"
     e.preventDefault();
 
     try{
-        const response = await axios.post('api/product', {
+        const response = await axios.post('api/product', {//peticion para agregar un producto
             codigo,
             descripcion,
             categoria,
@@ -56,7 +59,14 @@ const Inventario= () =>{
             }
         });
 
-        fetchProducts();
+        setCodigo("");
+        setDescripcion("");
+        setCategoria("");
+        setProveedor("");
+        setPrecio(0);
+        setStock(0);
+
+        fetchProducts();//al pulasr aceptar, se guardan el producto en la bd, y se vuelve a renderizas en fetchProducts;
     }catch(error){
         console.error(error);
         //alert('❌ Error al registrar');
@@ -68,6 +78,8 @@ const Inventario= () =>{
     // eslint-disable-next-line no-restricted-globals
     if (!confirm("¿Estás seguro de que deseas eliminar este producto?")) return;
 
+    // Actualizar tabla
+    setProducts(products.filter(p => p.id !== id));//se renderiza el componente, con la nueva lista de productos
     try {
       const response = await fetch(`/api/product/${id}`, {
         method: "DELETE",
@@ -76,9 +88,6 @@ const Inventario= () =>{
       if (!response.ok) {
         throw new Error("Error eliminando el producto");
       }
-
-      // Actualizar tabla
-      setProducts(products.filter(p => p.id !== id));
 
       alert("Producto eliminado correctamente");
     } catch (error) {
@@ -275,7 +284,8 @@ const Inventario= () =>{
                                                 border: "1px solid #000", 
                                                 padding: "2px 6px", 
                                                 lineHeight: "1.2" }} 
-                                            key={prod.codigo}>
+                                            //la key debe ser id. Así se evitan errores en el DOM
+                                            key={prod.id}> 
                                             <td style={{
                                                 //width:"150px",
                                                 //height:"auto",

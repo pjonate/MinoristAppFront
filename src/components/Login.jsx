@@ -8,7 +8,6 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 
  
 const Login =()=>{
-
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
 
@@ -37,20 +36,22 @@ const Login =()=>{
     setErrors(formErrors);
 
     if(Object.keys(formErrors).length == 0) {
+        e.preventDefault();
         try {
-            const response = await axios.post('api/login', {
-                name,
-                password
-            }, {
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                }
-            });
+            // Si usas Sanctum, primero: await axios.get('/sanctum/csrf-cookie');
 
-            navigate("/menu");
-        }catch(error){
-            alert("❌ Error al ingresar a menu");
+            const response = await axios.post('/login', { name, password });
+            // Laravel ya puso la cookie HttpOnly de sesión en la respuesta
+
+            // Validar/obtener usuario y navegar
+            const me = await axios.get('/user');
+            if (me.status === 200) {
+            // opcional: guardar me.data en contexto
+            navigate('/menu', { replace: true });
+            }
+        } catch (err) {
+            console.error(err.response ?? err);
+            // maneja errores, mostrar mensaje al usuario
         }
     }
 

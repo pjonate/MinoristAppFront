@@ -4,24 +4,25 @@ import { React, useState, useEffect } from 'react';
 import Select from "react-select";
 import Swal from 'sweetalert2';
 
-const Venta = ()=>{
-    const hoy = new Date();
+const Venta = ()=>{ //COMPOMENTE VENTA
+    const hoy = new Date(); //fecha de hoy
     const fechaFormateada = hoy.toLocaleDateString("es-CL"); // formato día/mes/año
 
-    const [codigo, setCodigo] = useState("");
-    const [producto, setProducto] = useState("");
-    const [sugerencias, setSugerencias] = useState([]);//sugerencias
+    const [codigo, setCodigo] = useState("");//hook de codigo
+    const [producto, setProducto] = useState("");//hook de producto
+    const [sugerencias, setSugerencias] = useState([]);//hook de sugerencias
 
-    const [cantidad, setCantidad] = useState(0);
-    const [precio, setPrecio] = useState(0);
+    const [cantidad, setCantidad] = useState(0);//hook de cantidad de productos
+    const [precio, setPrecio] = useState(0);//hook de precios
 
-    const [ventas, setVentas] = useState([
+    const [ventas, setVentas] = useState([//hook de ventas acumuladas
         //{ id: 1, producto: "Pan", cantidad: 2, precio: 1000 },
         //{ id: 2, producto: "Leche", cantidad: 1, precio: 1200 },
     ]);
 
-    const [productos, setProductos] = useState([]);//para el autorelleno
+    const [productos, setProductos] = useState([]);//para el autorelleno ??
 
+    //Efecto que se llama en el primer renderizado del componente. Trae todos los productos que estan en inventario
     useEffect(() => {
         fetch("api/products")
         .then(res => res.json())
@@ -29,87 +30,62 @@ const Venta = ()=>{
         .catch(err => console.error(err));
     }, []);
 
-    const [editingProduct, setEditingProduct] = useState(false);
-    const [editingCodigo, setEditingCodigo] = useState(false);
+    const [editingProduct, setEditingProduct] = useState(false); //estado de edicion de producto, inhabilitado por defecto
+    const [editingCodigo, setEditingCodigo] = useState(false); //estado de edicion de codigo, inhabilitado por defecto
 
+    const origenCambio = useRef(null); // "producto" | "codigo"
+    //Efecto para sugerencias de productos
     useEffect(() => {
+        if (origenCambio.current !== "producto") return;
 
-        // Si ambos vacíos → resetear
-        if (codigo === "" && producto === "") {
-            setPrecio(0);
-            return;
-        }
-
-        // 🛑 SI ESTOY EDITANDO PRODUCTO → NO AUTOCOMPLETAR (bloquea SOLO este lado)
-        if (editingProduct) {
-            setCodigo("");
-            setPrecio(0);
-            return;
-        }
-
-        /*
-        // 🛑 SI ESTOY EDITANDO CÓDIGO → NO AUTOCOMPLETAR POR PRODUCTO
-        if (editingCodigo) {
-            setProducto("");
-            setPrecio(0);
-            return;
-        }*/
-
-        // 🔹 1) Usuario escribe CÓDIGO
-        if (codigo !== "") {
-            const encontrado = productos.find(p => p.codigo === codigo);
-
-            if (encontrado) {
-                // AUTOCOMPLETAR TODO
-                if (encontrado.descripcion !== producto) {
-                    setProducto(encontrado.descripcion);
-                }
-                if (encontrado.precio !== precio) {
-                    setPrecio(encontrado.precio);
-                }
-            } else {
-                // Si no coincide → limpiar autocompletado
-                setProducto("");
-                setPrecio(0);
-            }
-
-            return; // detener aquí
-        }
-
-        // 🔹 2) Usuario escribe PRODUCTO exacto
-        if (producto !== "") {
-            const encontrado = productos.find(p => p.descripcion === producto);
-
-            if (encontrado) {
-                if (encontrado.codigo !== codigo) {
-                    setCodigo(encontrado.codigo);
-                }
-                if (encontrado.precio !== precio) {
-                    setPrecio(encontrado.precio);
-                }
-            } else {
-                // Si no coincide → limpiar autocompletado
-                setCodigo("");
-                setPrecio(0);
-            }
-        }
-
-    }, [codigo, producto, productos, editingProduct, editingCodigo]);
-
-    useEffect(() => {
-        if (producto.trim().length === 0) {
+        if (!producto.trim()) {
             setSugerencias([]);
             return;
         }
+        const texto = producto.toLocaleLowerCase();
 
-        const timeout = setTimeout(async () => {
-            const res = await fetch(`/api/products/buscar?q=${producto}`);
-            const data = await res.json();
-            setSugerencias(data);   // máximo 5 productos
-        }, 300);
+        const parciales = productos.filter(p =>
+            p.descripcion.toLowerCase().includes(texto)
+        )
 
-        return () => clearTimeout(timeout);
-    }, [producto]);
+        setSugerencias(parciales.slice(0, 5));
+
+        // Coincidencia exacta
+        const exacto = productos.find(p =>
+            p.descripcion.toLowerCase() === texto
+        );
+
+        if (exacto) {
+            setPrecio(exacto.precio);
+            setCodigo(exacto.codigo);
+            setProducto(exacto.descripcion);
+            setSugerencias([]);
+        } else {
+            setCodigo("");
+            setPrecio(0);
+            setCantidad(0);
+        }
+
+    }, [producto, productos]); //aunque productos no cambie, en la practica es bueno dejarlo
+
+    //Efecto para codigo
+    useEffect(()=>{
+        if (origenCambio.current !== "codigo") return;
+        const exacto = productos.find(p=>
+            p.codigo===codigo
+        )
+
+        if(exacto) {
+            setCodigo(exacto.codigo);
+            setPrecio(exacto.precio);
+            setProducto(exacto.descripcion);
+        } else{
+            setProducto("");
+            setPrecio(0);
+            setCantidad(0);
+        }
+    }, [codigo, productos]);
+
 
     const handleAgregar = () => {
         if (!codigo || !producto || cantidad <= 0 || precio <= 0) {
@@ -309,7 +285,7 @@ const Venta = ()=>{
                                     placeholder="Código" 
                                     value={codigo}
                                     onChange={e =>{ 
-                                        setEditingCodigo(true);
+                                        origenCambio.current = "codigo";
                                         setCodigo(e.target.value)
                                     }} />
                             </td>
@@ -321,7 +297,7 @@ const Venta = ()=>{
                                         placeholder="Producto"
                                         value={producto}
                                         onChange={e => {
-                                            setEditingProduct(true);
+                                            origenCambio.current = "producto";
                                             setProducto(e.target.value);
                                         }}
                                         onBlur={() => setTimeout(() => setSugerencias([]), 200)} 
@@ -350,11 +326,10 @@ const Venta = ()=>{
                                                 <li
                                                     key={s.id}
                                                     onClick={() => {
+                                                        setCodigo(s.codigo);
                                                         setProducto(s.descripcion);
-                                                        setPrecio(Number(s.precio_venta) || 0);
+                                                        setPrecio(s.precio);
                                                         setSugerencias([]);
-                                                        setEditingProduct(false);
-                                                        setEditingCodigo(false);
                                                     }}
                                                     style={{
                                                         padding: "6px 10px",
