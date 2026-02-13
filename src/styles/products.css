@@ -1,0 +1,28 @@
+.nav-link{
+  color: #ffffff !important;      /* fondo */
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  cursor:pointer !important;
+}
+
+.productos-nav{
+    background-color: #6f4e37;
+    padding: 8px;
+    border-radius: 12px;
+    margin-bottom: 50px !important; /*margen inferior*/
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* Hover */
+.productos-nav .nav-link:hover {
+  background-color: #9c6b4f;
+  transform: translateY(-1px);
+}
+
+/* Activo */
+.productos-nav .nav-link.active {
+  background-color: #2563eb;
+}

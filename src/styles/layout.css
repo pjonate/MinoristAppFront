@@ -1,0 +1,103 @@
+/* =====================
+   BODY DEL LAYOUT
+===================== */
+
+.layout-body {
+  flex: 1;
+  display: flex;
+  /*gap: 16px;
+  padding: 16px;*/
+  background: #f6f6f2;
+}
+
+/* =====================
+   SIDEBAR (MÁS LIVIANA)
+===================== */
+
+.sidebar {
+  width: 250px;
+  min-height: 100vh;
+  padding: 28px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 38px;
+
+  background: linear-gradient(
+    180deg,
+    #6f4e37 0%,
+    #9c6b4f 45%,
+    #e8d9c4 100%
+  );
+}
+
+/* Título */
+.sidebar-title {
+  font-family: "Caveat", cursive;
+  font-size: 30px;
+  color: #fffaf3;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 18px;
+  padding: 10px 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.sidebar a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  color: #ffffff;
+  font-size: 15px;
+  text-decoration: none;
+  padding: 12px 16px;
+  border-radius: 14px;
+
+  transition: all 0.25s ease;
+}
+
+/* Icono */
+.sidebar a i {
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+/* Hover */
+.sidebar a:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  transform: translateX(4px);
+}
+
+/* Activo */
+.sidebar a.active {
+  background-color: rgba(255, 255, 255, 0.35);
+  font-weight: 600;
+}
+
+
+
+/* =====================
+   CONTENIDO PRINCIPAL
+===================== */
+
+.layout-content {
+  flex: 1;                /* ← CLAVE */
+  padding: 32px;
+  min-height: 100vh;
+  background-color: #f8f5f1;
+}
+
+.layout-root {
+  display: flex;
+  width: 100vw;
+  min-height: 100vh;
+  background-color: #f8f5f1;
+}
+
+.layout-container {
+  width: 100%;
+  max-width: none; /* ← este es el “ancho del layout” */
+  display: flex;
+  flex-direction: column;
+}
+

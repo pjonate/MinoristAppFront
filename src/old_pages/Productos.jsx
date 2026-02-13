@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react"; //useState es un hook que permite a los componentes funcionales renderizarse en función de los 
 //cambios en los estados (variables o espacios de memoria especiales dentro de un componente)
 //useEffect es un hook que se ejcuta despues de cada render que el componente haga
-import axios from "axios";//biblioteca de JS para realizar peticiones HTTP
+import apiAxios from "../services/apiAxios";
+import { apiFetch } from "../services/apiFetch";
 import { FaArrowLeft } from 'react-icons/fa';//icono de flecha de React
+import "../styles/styles.css";
 
-const Inventario= () =>{//componente Inventario
+const Productos= () =>{//componente Inventario
 
   const [products, setProducts] = useState([]);//Estado para productos, es una lista
   
@@ -14,7 +16,7 @@ const Inventario= () =>{//componente Inventario
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get("api/products");
+      const response = await apiAxios.get("api/products");
       setProducts(response.data); // guarda los productos en el estado. Se renderiza el componente nuevamente
     } catch (error) {
       console.error("Error al obtener productos:", error);
@@ -45,7 +47,7 @@ const Inventario= () =>{//componente Inventario
     e.preventDefault();
 
     try{
-        const response = await axios.post('api/product', {//peticion para agregar un producto
+        const response = await apiAxios.post('api/product', {//peticion para agregar un producto
             codigo,
             descripcion,
             categoria,
@@ -81,7 +83,7 @@ const Inventario= () =>{//componente Inventario
     // Actualizar tabla
     setProducts(products.filter(p => p.id !== id));//se renderiza el componente, con la nueva lista de productos
     try {
-      const response = await fetch(`/api/product/${id}`, {
+      const response = await apiFetch(`/api/product/${id}`, {
         method: "DELETE",
       });
 
@@ -120,7 +122,7 @@ const Inventario= () =>{//componente Inventario
     };
 
     // 👉 Guardar en tu backend (si tienes API)
-    await fetch(`/api/product/${productoEditando}`, {
+    await apiFetch(`/api/product/${productoEditando}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(actualizado)
@@ -135,42 +137,9 @@ const Inventario= () =>{//componente Inventario
     setProductoEditando(null);
     setModalOpen(false);
   };
-
     return(
       <div>   
-        <header
-          style={{
-          backgroundColor: "#d7d428",
-          width: "100%",
-          height: "75px",
-          display: "flex",
-          alignItems: "center"
-        }}
-        >
-          <text
-            className='text-header'
-            style={{
-              padding:"0px 15px"
-            }}
-          >
-            MinoristApp
-          </text>
-
-          <FaArrowLeft 
-            size={36} 
-            style={{ 
-              cursor: "pointer", 
-              marginRight: "2rem", 
-              marginLeft: "auto",
-              color: "white",
-            }} 
-            onClick={() => window.history.back()} 
-          />
-        </header>     
-
         <div style={{display:"flex"}}>
-          <aside style={{backgroundColor: "#e1e1e1", width: "180px", height: "calc(100vh - 75px)"}}></aside> 
-          
           <main
             style={{
               display:"flex",
@@ -181,6 +150,43 @@ const Inventario= () =>{//componente Inventario
             }}
           >
                 <h4 style={{paddingBottom:"20px"}}>Gestión de inventario</h4>
+
+                <div class="container my-3">
+                  <div class="row">
+                    <div class="col-md-6 col-lg-5">
+                      <form class="card p-3 shadow-sm">
+
+                        <text style={{paddingBottom:"10px"}}>Buscar por:</text>
+                        <div class="row g-2 align-items-center">
+
+                          <div class="col-4">
+                            <select class="form-select" name="searchType">
+                              <option value="id">ID</option>
+                              <option value="name">Nombre</option>
+                            </select>
+                          </div>
+
+                          <div class="col-8">
+                            <input
+                              type="text"
+                              class="form-control"
+                              name="query"
+                              placeholder="Ingrese ID o nombre"
+                            />
+                          </div>
+
+                          <div class="col-12 d-grid mt-2">
+                            <button type="submit" class="btn btn-buscar btn-sm">
+                              Buscar
+                            </button>
+                          </div>
+
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+
                 <form onSubmit={handleSubmit} style={{maxHeight: "500px", overflowY: "auto"}}>
                     <table
                         style={{
@@ -196,7 +202,7 @@ const Inventario= () =>{//componente Inventario
                             fontFamily: "sans-serif", // tipo de letra
                         }} 
                     >
-                        <thead style={{ backgroundColor: "#dad87aff", color: "#fff" }}>
+                        <thead style={{ backgroundColor: "#e8d9c4", color: "#000" }}>
                             <tr>
                                 <th style={{ border: "1px solid #000", padding: "8px", width: "150px" }}>Código</th>
                                 <th style={{ border: "1px solid #000", padding: "8px", width: "150px" }}>Descripción</th>
@@ -367,9 +373,6 @@ const Inventario= () =>{//componente Inventario
                     </table>
                 </form>
           </main>
-
-          <aside style={{backgroundColor: "#e1e1e1", width: "180px", height: "calc(100vh - 75px)"}}></aside> 
-
         </div>
         {modalOpen && (
           <div
@@ -507,4 +510,4 @@ const Inventario= () =>{//componente Inventario
     );
 }
 
-export default Inventario;
+export default Productos;

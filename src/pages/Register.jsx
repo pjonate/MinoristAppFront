@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import apiAxios from '../services/apiAxios';
 import { useNavigate } from "react-router-dom";
 import "../styles/styles.css";
 import { FaArrowLeft } from 'react-icons/fa';
@@ -43,7 +43,7 @@ const Register = () => {
 
     if (Object.keys(formErrors).length === 0) {
       try {
-        const response = await axios.post('/api/register', {
+        const response = await apiAxios.post('/api/register', {
           name,
           password
         }, {

@@ -2,14 +2,17 @@ import { BrowserRouter as Router, Routes, Route, useLocation  } from 'react-rout
 import { AnimatePresence } from "framer-motion";
 
 import React from 'react';
-import Login from './components/Login'; // Ajusta la ruta si tu archivo está en otra carpeta
-import Register from './components/Register';
-import Menu from './components/Menu';
-import Venta from './components/erp/Venta';
-import Inventario from './components/erp/Inventario';
-import Reportes from './components/erp/Reportes';
+import Login from './pages/Login'; // Ajusta la ruta si tu archivo está en otra carpeta
+import Register from './pages/Register';
+import Venta from './pages/Venta';
+import Reportes from './pages/Reportes';
+import Productos from './pages/Productos';
 
-import ProtectedRoute from './components/ProtectedRoute';
+
+import ProtectedRoute from './auth/ProtectedRoute';
+
+import MainLayout from './layouts/MainLayout';
+
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -22,42 +25,18 @@ function AnimatedRoutes() {
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* Rutas protegidas */}
+        {/* Rutas protegidas + layout */}
         <Route
-          path="/menu"
           element={
             <ProtectedRoute>
-              <Menu />
+              <MainLayout />
             </ProtectedRoute>
           }
-        />
-
-        <Route
-          path="/venta"
-          element={
-            <ProtectedRoute>
-              <Venta />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/inventario"
-          element={
-            <ProtectedRoute>
-              <Inventario />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/reportes"
-          element={
-            <ProtectedRoute>
-              <Reportes />
-            </ProtectedRoute>
-          }
-        />
+        >
+          <Route path='/productos' element={<Productos />}/>
+          <Route path="/venta" element={<Venta />} />
+          <Route path="/reportes" element={<Reportes />} />
+        </Route>
 
       </Routes>
     </AnimatePresence>

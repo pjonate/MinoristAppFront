@@ -1,20 +1,87 @@
-input{
-  border-radius: 16px !important;
+.div-login{
+  background-image: url("../recursos/fondo_login.jpg");/*imagen de fondo a utilizar*/
+  background-size: cover;/*cubrir toda la pantalla*/
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 100vh; /*ocupa toda la ventana*/
+  width: 100%;
+  display: flex;/*esta oñpcion permite que los elementos dentro de un div puedan ubicarse libremente dentro del div*/
+  justify-content: center;/*centra el contenido dentro de div a lo anchi*/
+  align-items:center;/*centra el contenido de div a lo alto*/
 }
 
-select{
-  border-radius: 16px !important;
+.div-title-login{
+  background-color: #ffffff;/*color de fondo*/
+  border-radius: 16px;/*radio de las esqunas*/
+  width: 400px;/*ancho en pixeles*/
+  height: 550px;/*altura en pixeles*/
+  text-align: center;/*ubicacion por defecto de los elementos dentro del div, en este caso en el centro*/
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
 }
 
-input::placeholder{
-  color:#000;
+.div-title-text-login{
+  padding-top: 2rem;
 }
 
-.welcome-text{
+.welcome-text-login{
   font-family: "Papyrus" !important; /*fuente*/
   font-size: 48px;/*tamaño de letra*/
   margin-bottom: 0.2rem;
   font-style: italic;
+}
+
+.line-title-login{
+  height: 2.5px;
+  background-color: black;
+  margin-top: 0.01rem;
+}
+
+.form-login{
+  padding-top: 30px;
+  display: flex;/*se pueden ubicar los elemntos dentro del elemento libremente, en este caso, dentro de un form*/
+  align-items: center;
+  flex-direction:column;/*Con "column", se apilan los elementos uno encima de otro dentro del elemento*/
+  gap: 2rem; /*separacion de dos lineas entre cada etiqueta dentro del elemento actual, un form en este caso*/
+}
+
+.input-login{
+  padding: 0px 15px; /*espacio arriba 0px, hacia el lado 15px*/
+  border: None;
+  background-color:#f5f5f3;
+  width: 270px;
+  height: 55px;
+}
+
+.visor-password{
+  position: absolute;
+  right: 10px;
+  top: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: #555;
+}
+
+.button-login{
+  width:270px;
+  height:55px;
+  border-radius: 16px;
+  border: None;
+  background-color: #ffb458;
+}
+
+
+input{
+  border-radius: 5px !important;
+}
+
+select{
+  border-radius: 5px !important;
+}
+
+input::placeholder{
+  color:#000;
 }
 
 .text-header{
@@ -27,3 +94,9 @@ input::placeholder{
 .menu-button:hover{
   background-color: #f2ffbd !important;/*es necesario important para aumentar su prioridad a la par de los elementos React*/
 }
+
+.btn-buscar {
+  background-color: #e8d9c4 !important; /* morado */
+  color: white;
+}
+
