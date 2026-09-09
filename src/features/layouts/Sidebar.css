@@ -1,0 +1,67 @@
+.sidebar {
+  width: 240px;
+  height: 100vh;
+
+  display: flex;
+  flex-direction: column;
+
+  background: #0f172a;
+  padding: 20px 16px;
+}
+
+/* Título */
+.sidebar-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 24px;
+  color: #f3f4f6;
+  letter-spacing: 0.3px;
+}
+
+/* NAV */
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* ITEM base (fusionado con fondo) */
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  text-decoration: none;
+  font-size: 14px;
+
+  background: #0f172a !important;   /* mismo que sidebar */
+  color: #ffffff;        /* mismo que fondo → “invisible” */
+
+  padding: 12px 10px;
+  border-radius: 6px;
+
+  transition: all 0.15s ease;
+}
+
+/* ICONO */
+.sidebar-icon {
+  opacity: 0.6;
+  transition: opacity 0.15s ease;
+}
+
+/* HOVER (aparece) */
+.sidebar-item:hover {
+  background: #141e37 !important;
+  color: #e5e7eb;
+}
+
+.sidebar-icon {
+  opacity: 1;
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

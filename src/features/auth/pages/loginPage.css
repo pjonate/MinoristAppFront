@@ -1,0 +1,27 @@
+.div-login-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+
+    /* fondo azul degradado */
+    background: linear-gradient(to bottom, #010a14, #1461af); /* azul intenso → más claro */
+}
+
+.password-form-login {
+    position: relative;
+}
+
+.visor-password {
+    position: absolute;
+    right: 10px;       /* separación desde el borde derecho */
+    top: 50%;          /* centro vertical */
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #555;       /* opcional: color del icono */
+}
+
+.boton-login {
+    display: block;
+    margin: 0 auto;
+}

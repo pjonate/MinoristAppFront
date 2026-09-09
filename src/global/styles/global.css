@@ -1,0 +1,15 @@
+/* Botones globales */
+button {
+  background-color: #00306b;  /* color de fondo */
+  border: none;               /* sin borde, opcional */
+  color: white;               /* texto */
+  padding: 0.5rem 1rem;        /*tamaño del botón */
+  border-radius: 8px;         /* bordes redondeados */
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.2s ease;
+}
+
+button:hover {
+  background-color: #1461af;  /* más oscuro al pasar mouse */
+}

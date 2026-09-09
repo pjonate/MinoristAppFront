@@ -1,0 +1,9 @@
+.div-login-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+
+    /* fondo azul degradado */
+    background: linear-gradient(to bottom, #010a14, #1461af); /* azul intenso → más claro */
+}
