@@ -1,8 +1,8 @@
 import { useState } from "react"
 import { getProductByCodeService } from "../services/SaleServices";
+import { searchProductsService } from "../services/SaleServices";
 import { createSaleService } from "../services/SaleServices";
 import { useAuth } from "../../context/authContext";
-import { getErrorMessage } from "../../../global/errors/getErrorMessage";
 
 export const useSale = () =>{
 
@@ -15,9 +15,62 @@ export const useSale = () =>{
         items: []
     });
 
-    const addProduct = async (code) => {
+    const addProduct = async (value) => {
 
-        const cleanCode = code.trim();
+        const searchValue = value.trim();
+
+        if (!searchValue) {
+            setErrorGetProduct("Ingresa un código o nombre de producto");
+            return;
+        }
+
+        let product;
+
+        try {
+            try {
+                product = await getProductByCodeService(searchValue, token);
+            } catch (codeError) {
+                if (codeError.code !== "PRODUCT_NOT_FOUND") {
+                    throw codeError;
+                }
+
+                const products = await searchProductsService(searchValue, token);
+                const exactMatch = products.find(
+                    item => item.descripcion.trim().toLowerCase() === searchValue.toLowerCase()
+                );
+
+                if (exactMatch) {
+                    product = exactMatch;
+                } else if (products.length === 1) {
+                    product = products[0];
+                } else if (products.length > 1) {
+                    setErrorGetProduct("Hay varios productos con ese nombre. Escribe un nombre más específico.");
+                    return;
+                } else {
+                    setErrorGetProduct("Producto no encontrado");
+                    return;
+                }
+            }
+        } catch (err) {
+            const errorMessages = {
+                PRODUCT_NOT_FOUND: "Producto no encontrado",
+                OUT_OF_STOCK: "Producto sin stock",
+                AUTH_REQUIRED: "Tu sesión expiró. Inicia sesión nuevamente",
+                FORBIDDEN: "No tienes permisos para consultar productos",
+                SERVER_ERROR: "Error del servidor al consultar el producto",
+                NETWORK_ERROR: "No se pudo conectar con el servidor"
+            };
+
+            setErrorGetProduct(errorMessages[err.code] || err.message || "Error al consultar el producto");
+            return;
+        }
+
+        if (product.stock <= 0) {
+            setErrorGetProduct("Producto sin stock");
+            return;
+        }
+
+        const cleanCode = product.codigo;
 
         // 🔍 1. revisar estado ACTUAL (no dentro de setSale)
         const existing = sale.items.find(item => item.code === cleanCode);
@@ -51,11 +104,8 @@ export const useSale = () =>{
             return; // 🔥 corta ejecución
         }
 
-        // 🟢 CASO 2: no existe → llamar service
-        try {
-            const product = await getProductByCodeService(cleanCode, token);
-
-            setSale(prev => {
+        // 🟢 CASO 2: no existe → agregar el producto encontrado
+        setSale(prev => {
             const newItem = {
                 code: product.codigo,
                 description: product.descripcion,
@@ -69,11 +119,7 @@ export const useSale = () =>{
             const total = items.reduce((acc, i) => acc + i.subtotal, 0);
 
             return { ...prev, items, total };
-            });
-
-        } catch (err) {
-            console.log("Producto no encontrado");
-        }
+        });
     };
 
     const handleQuantityChange = (code, value) => {

@@ -52,14 +52,14 @@ export const CartTable = () => {
     <div className="container mt-4">
     
         <label htmlFor="productSearch" className="form-label fw-bold text-secondary small ms-1">
-            Búsqueda manual de producto
+            Ingresar código o nombre del producto
         </label>
 
         <div className="input-group mb-3">
             <input 
                 type="text" 
                 className="form-control form-control-lg" 
-                placeholder="Escribir código de barras..."
+                placeholder="Escribir código o nombre..."
                 value={code}
                 onChange={(e) => setCode(e.target.value)}
             />
