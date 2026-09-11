@@ -15,14 +15,21 @@ export const useSale = () =>{
         items: []
     });
 
+    const getTotal = (items) => items.reduce(
+        (acc, item) => acc + (Number(item.subtotal) || 0),
+        0
+    );
+
     const addProduct = async (value) => {
 
-        const searchValue = value.trim();
+        const searchValue = String(value ?? "").trim();
 
         if (!searchValue) {
             setErrorGetProduct("Ingresa un código o nombre de producto");
-            return;
+            return false;
         }
+
+        setErrorGetProduct("");
 
         let product;
 
@@ -45,10 +52,10 @@ export const useSale = () =>{
                     product = products[0];
                 } else if (products.length > 1) {
                     setErrorGetProduct("Hay varios productos con ese nombre. Escribe un nombre más específico.");
-                    return;
+                    return false;
                 } else {
                     setErrorGetProduct("Producto no encontrado");
-                    return;
+                    return false;
                 }
             }
         } catch (err) {
@@ -62,50 +69,37 @@ export const useSale = () =>{
             };
 
             setErrorGetProduct(errorMessages[err.code] || err.message || "Error al consultar el producto");
-            return;
+            return false;
         }
 
         if (product.stock <= 0) {
             setErrorGetProduct("Producto sin stock");
-            return;
+            return false;
         }
 
         const cleanCode = product.codigo;
 
-        // 🔍 1. revisar estado ACTUAL (no dentro de setSale)
-        const existing = sale.items.find(item => item.code === cleanCode);
-
-        // 🔴 CASO 1: ya existe → NO llamar backend
-        if (existing) {
-
-            // validar stock
-            if (existing.quantity >= existing.stock) {
-                console.log("No hay más stock disponible");
-                return;
-            }
-
-            // actualizar localmente
-            setSale(prev => {
-            const items = prev.items.map(item =>
-                item.code === cleanCode
-                ? {
-                    ...item,
-                    quantity: item.quantity + 1,
-                    subtotal: (item.quantity + 1) * item.unitPrice
-                    }
-                : item
-            );
-
-            const total = items.reduce((acc, i) => acc + i.subtotal, 0);
-
-            return { ...prev, items, total };
-            });
-
-            return; // 🔥 corta ejecución
-        }
-
-        // 🟢 CASO 2: no existe → agregar el producto encontrado
+        // Decide against the latest cart state to avoid duplicate lines on fast scans.
         setSale(prev => {
+            const existing = prev.items.find(item => item.code === cleanCode);
+            let items;
+
+            if (existing) {
+                const quantity = Number(existing.quantity) || 0;
+
+                if (quantity >= existing.stock) {
+                    return prev;
+                }
+
+                items = prev.items.map(item => item.code === cleanCode
+                    ? {
+                        ...item,
+                        quantity: quantity + 1,
+                        subtotal: (quantity + 1) * item.unitPrice
+                    }
+                    : item
+                );
+            } else {
             const newItem = {
                 code: product.codigo,
                 description: product.descripcion,
@@ -115,11 +109,13 @@ export const useSale = () =>{
                 stock: product.stock // 🔥 necesario
             };
 
-            const items = [...prev.items, newItem];
-            const total = items.reduce((acc, i) => acc + i.subtotal, 0);
+                items = [...prev.items, newItem];
+            }
 
-            return { ...prev, items, total };
+            return { ...prev, items, total: getTotal(items) };
         });
+
+        return true;
     };
 
     const handleQuantityChange = (code, value) => {
@@ -166,7 +162,7 @@ export const useSale = () =>{
         return item;
         });
 
-        const total = items.reduce((acc, i) => acc + i.subtotal, 0);
+        const total = getTotal(items);
 
         return {
         ...prev,
@@ -180,22 +176,20 @@ export const useSale = () =>{
     const handleQuantityBlur = (code, value) => {
         let quantity = parseInt(value);
 
-        if (isNaN(quantity) || quantity <= 0) {
-            quantity = 1;
-        }
+        if (isNaN(quantity) || quantity <= 0) quantity = 1;
 
         setSale(prev => {
             const items = prev.items.map(item =>
             item.code === code
                 ? {
                     ...item,
-                    quantity,
-                    subtotal: quantity * item.unitPrice
+                    quantity: Math.min(quantity, item.stock),
+                    subtotal: Math.min(quantity, item.stock) * item.unitPrice
                 }
                 : item
             );
 
-            const total = items.reduce((acc, i) => acc + i.subtotal, 0);
+            const total = getTotal(items);
 
             return {
             ...prev,
@@ -209,7 +203,7 @@ export const useSale = () =>{
         setSale(prev => {
             const items = prev.items.filter(item => item.code !== code);
 
-            const total = items.reduce((acc, i) => acc + i.subtotal, 0);
+            const total = getTotal(items);
 
             return {
                 ...prev,
@@ -221,6 +215,11 @@ export const useSale = () =>{
 
 
     const finalizeSale = async () => {
+        if (!sale.items.length) {
+            setErrorGetProduct("El carrito está vacío");
+            return false;
+        }
+
         try {
             const response = await createSaleService(sale, token);
 
@@ -230,11 +229,11 @@ export const useSale = () =>{
                 total: 0
             });
             console.log("RESPUESTA:", response); 
-            //toast.success("Venta registrada");
+            return true;
 
         } catch (err) {
-            //toast.error(err.response?.data?.error || "Error al registrar venta");
-            console.log("error");
+            setErrorGetProduct(err.message || "Error al registrar la venta");
+            return false;
         }
 
 

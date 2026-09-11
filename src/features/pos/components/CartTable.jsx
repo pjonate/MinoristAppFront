@@ -18,30 +18,19 @@ export const CartTable = () => {
     const { sale, addProduct, handleQuantityChange, handleQuantityBlur, removeItem, errorGetProduct, setErrorGetProduct, finalizeSale } = useSale();
     const [code, setCode] = useState("");
 
-    const handleFinalizeClick = async () => {
-        const confirmed = window.confirm(`Total: $${sale.total}\n¿Confirmar venta?`);
-
-        if (!confirmed) return;
-
-        await finalizeSale();
-    };
-
 
     useBarcodeScanner((codeScan) => {
         addProduct(codeScan);
     });
 
-    const [ errorDisparado, setErrorDisparado ] = useState(false);
     const { addToast } = useToast();
 
     useEffect(() => {
-        if (errorGetProduct && !errorDisparado) {
+        if (errorGetProduct) {
             addToast({ type: "danger", message: errorGetProduct, duration: 5000 });
-            setErrorDisparado(true); // marca que ya se disparó
         }
-        setErrorDisparado(false);
         setErrorGetProduct(null);
-    }, [errorGetProduct, addToast]);
+    }, [errorGetProduct, addToast, setErrorGetProduct]);
 
 
     //estado de ovelay cofimrar compra
@@ -65,7 +54,10 @@ export const CartTable = () => {
             />
             <button 
                 className="btn btn-primary"
-                onClick={() => addProduct(code)}>
+                onClick={async () => {
+                    const added = await addProduct(code);
+                    if (added) setCode("");
+                }}>
                 Agregar
             </button>
         </div>
@@ -136,6 +128,7 @@ export const CartTable = () => {
 
                 <button 
                     className="btn btn-success btn-lg mt-3"
+                    disabled={!sale.items.length}
                     onClick={() => setConfirming(true)} 
                 >
                     Finalizar venta
@@ -146,8 +139,8 @@ export const CartTable = () => {
                     total={sale.total}
                     onCancel={() => setConfirming(false)}
                     onConfirm={async () => {
-                        await finalizeSale();
-                        setConfirming(false);
+                        const finalized = await finalizeSale();
+                        if (finalized) setConfirming(false);
                     }}
                 />
 

@@ -16,7 +16,7 @@ const createProductRequestError = (response, data) => {
 export const getProductByCodeService = async(code, token) =>{
     const cleanCode = code.trim();
     try{
-        const response = await fetch(`${API_URL}/producto/${cleanCode}`, {
+        const response = await fetch(`${API_URL}/producto/${encodeURIComponent(cleanCode)}`, {
             method: "GET",
             headers: {
                 Authorization: `Bearer ${token}`
