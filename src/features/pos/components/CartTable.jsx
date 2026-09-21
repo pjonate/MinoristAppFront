@@ -79,8 +79,8 @@ export const CartTable = () => {
                 {sale.items.length > 0 ? (
                     // CAMINO A: Si hay productos
                     sale.items.map((item) => (
-                    <tr key={item.code}>
-                        <td>{item.code}</td>
+                    <tr key={item.productId}>
+                        <td>{item.code || "Sin código"}</td>
                         <td>{item.description}</td>
                         <td>{formatPrice(item.unitPrice)}</td>
                         <td>
@@ -89,13 +89,13 @@ export const CartTable = () => {
                             className="form-control text-center"
                             value={item.quantity}
                             min="1"
-                            onChange={(e) => handleQuantityChange(item.code, e.target.value)}
-                            onBlur={(e) => handleQuantityBlur(item.code, e.target.value)}
+                            onChange={(e) => handleQuantityChange(item.productId, e.target.value)}
+                            onBlur={(e) => handleQuantityBlur(item.productId, e.target.value)}
                         />
                         </td>
                         <td>{formatPrice(item.subtotal)}</td>
                         <td>
-                        <button className="btn btn-sm btn-outline-danger" onClick={() => removeItem(item.code)}>
+                        <button className="btn btn-sm btn-outline-danger" onClick={() => removeItem(item.productId)}>
                             ❌
                         </button>
                         </td>

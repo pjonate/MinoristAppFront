@@ -77,11 +77,11 @@ export const useSale = () =>{
             return false;
         }
 
-        const cleanCode = product.codigo;
+        const productId = product.id;
 
         // Decide against the latest cart state to avoid duplicate lines on fast scans.
         setSale(prev => {
-            const existing = prev.items.find(item => item.code === cleanCode);
+            const existing = prev.items.find(item => item.productId === productId);
             let items;
 
             if (existing) {
@@ -91,7 +91,7 @@ export const useSale = () =>{
                     return prev;
                 }
 
-                items = prev.items.map(item => item.code === cleanCode
+                items = prev.items.map(item => item.productId === productId
                     ? {
                         ...item,
                         quantity: quantity + 1,
@@ -101,6 +101,7 @@ export const useSale = () =>{
                 );
             } else {
             const newItem = {
+                productId,
                 code: product.codigo,
                 description: product.descripcion,
                 quantity: 1,
@@ -124,7 +125,7 @@ export const useSale = () =>{
     if (value === "") {
         setSale(prev => {
         const items = prev.items.map(item =>
-            item.code === code
+            item.productId === code
             ? { ...item, quantity: "" }
             : item
         );
@@ -141,7 +142,7 @@ export const useSale = () =>{
 
     setSale(prev => {
         const items = prev.items.map(item => {
-        if (item.code === code) {
+        if (item.productId === code) {
 
             // 🔒 mínimo 1
             let safeQuantity = Math.max(1, quantity);
@@ -180,7 +181,7 @@ export const useSale = () =>{
 
         setSale(prev => {
             const items = prev.items.map(item =>
-            item.code === code
+            item.productId === code
                 ? {
                     ...item,
                     quantity: Math.min(quantity, item.stock),
@@ -201,7 +202,7 @@ export const useSale = () =>{
 
     const removeItem = (code) => {
         setSale(prev => {
-            const items = prev.items.filter(item => item.code !== code);
+            const items = prev.items.filter(item => item.productId !== code);
 
             const total = getTotal(items);
 
@@ -221,7 +222,19 @@ export const useSale = () =>{
         }
 
         try {
-            const response = await createSaleService(sale, token);
+            const salePayload = {
+                ...sale,
+                items: sale.items.map(({ productId, code, description, quantity, unitPrice, subtotal, stock }) => ({
+                    product_id: productId,
+                    code: code || null,
+                    description,
+                    quantity,
+                    unitPrice,
+                    subtotal,
+                    stock
+                }))
+            };
+            const response = await createSaleService(salePayload, token);
 
             // limpiar carrito
             setSale({

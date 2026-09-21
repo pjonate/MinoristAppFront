@@ -19,6 +19,7 @@ export const getProductByCodeService = async(code, token) =>{
         const response = await fetch(`${API_URL}/producto/${encodeURIComponent(cleanCode)}`, {
             method: "GET",
             headers: {
+                "Accept": "application/json",
                 Authorization: `Bearer ${token}`
             }
         });
@@ -47,6 +48,7 @@ export const searchProductsService = async (query, token) => {
     const response = await fetch(`${API_URL}/products/search?q=${encodeURIComponent(query)}`, {
         method: "GET",
         headers: {
+            "Accept": "application/json",
             Authorization: `Bearer ${token}`
         }
     });
@@ -64,16 +66,37 @@ export const createSaleService = async (sale, token) => {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
+            "Accept": "application/json",
             "Authorization": `Bearer ${token}`
         },
         body: JSON.stringify(sale)
     });
 
-    // 🔴 manejar errores HTTP
-    if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Error al crear venta");
+    const contentType = response.headers.get("content-type") || "";
+    const responseText = await response.text();
+    let data = null;
+
+    if (contentType.includes("application/json") && responseText) {
+        data = JSON.parse(responseText);
     }
 
-    return await response.json();
+    if (!response.ok) {
+        const error = new Error(
+            data?.error || data?.message ||
+            "El servidor no pudo registrar la venta"
+        );
+        error.status = response.status;
+
+        if (response.status === 401) error.code = "AUTH_REQUIRED";
+        if (response.status === 403) error.code = "FORBIDDEN";
+        if (response.status >= 500) error.code = "SERVER_ERROR";
+
+        throw error;
+    }
+
+    if (!data) {
+        throw new Error("El servidor confirmó la venta con una respuesta inválida");
+    }
+
+    return data;
 };
