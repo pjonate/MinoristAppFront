@@ -8,3 +8,47 @@
 .pedido-form-modal {
   width: min(560px, calc(100vw - 32px));
 }
+
+.pedido-product-results {
+  max-height: 220px;
+  overflow-y: auto;
+  margin-top: 6px;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  background: #fff;
+}
+
+.pedido-product-option {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  border: 0;
+  border-bottom: 1px solid #f1f3f5;
+  background: #fff;
+  padding: 9px 12px;
+  text-align: left;
+  color: #212529;
+}
+
+.pedido-product-option:hover,
+.pedido-product-option.selected {
+  background: #eef5ff;
+}
+
+.pedido-product-option span {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.pedido-product-option small {
+  color: #6c757d;
+}
+
+.pedido-product-empty {
+  padding: 12px;
+  color: #6c757d;
+  text-align: center;
+}
