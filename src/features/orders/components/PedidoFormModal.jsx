@@ -80,7 +80,7 @@ export const PedidoFormModal = ({ open, products, loading, onClose, onSave }) =>
           <input
             className="form-control"
             type="search"
-            placeholder="Ej: 7801235131117 o jurel san jose"
+            placeholder="Ingrese el código o nombre del producto"
             value={productQuery}
             onChange={(event) => setProductQuery(event.target.value)}
           />
