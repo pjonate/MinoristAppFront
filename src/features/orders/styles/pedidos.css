@@ -1,0 +1,10 @@
+.pedidos-table th {
+  color: #64748b;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.pedido-form-modal {
+  width: min(560px, calc(100vw - 32px));
+}

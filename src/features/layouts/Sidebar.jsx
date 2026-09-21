@@ -2,6 +2,7 @@ import { NavLink } from "react-router-dom";
 import "./Sidebar.css";
 import { ShoppingCart } from "lucide-react"
 import { Package } from "lucide-react";
+import { ClipboardList } from "lucide-react";
 import { useAuth } from "../context/authContext";
 
 export const Sidebar = () => {
@@ -23,6 +24,13 @@ export const Sidebar = () => {
                 <NavLink to="/inventory" className="sidebar-item">
                     <Package size={18} className="sidebar-icon" />
                     Inventario
+                </NavLink>
+            </nav>
+
+            <nav className="sidebar-nav">
+                <NavLink to="/pedidos" className="sidebar-item">
+                    <ClipboardList size={18} className="sidebar-icon" />
+                    Pedidos
                 </NavLink>
             </nav>
 

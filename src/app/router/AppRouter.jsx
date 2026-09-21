@@ -6,6 +6,7 @@ import LoginPage from "../../features/auth/pages/LoginPage.jsx"
 import RegisterPage from "../../features/auth/pages/RegisterPage.jsx";
 import SalePage from "../../features/pos/pages/SalePage.jsx";
 import { InventoryPage } from "../../features/inventory/pages/InventoryPage.jsx";
+import { PedidosPage } from "../../features/orders/pages/PedidosPage.jsx";
 
 export default function AppRouter() {
 
@@ -20,6 +21,7 @@ export default function AppRouter() {
           <Route element={<AppLayout />}>
             <Route path="/pos" element={<SalePage />} />
             <Route path="/inventory" element={<InventoryPage />} />
+            <Route path="/pedidos" element={<PedidosPage />} />
           </Route>
         </Route>
 

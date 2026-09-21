@@ -20,6 +20,11 @@ export default function Sidebar() {
         <i className="bi bi-chevron-right"></i>
         <span>Reportes</span>
       </NavLink>
+
+      <NavLink to="/pedidos">
+        <i className="bi bi-clipboard-check"></i>
+        <span>Pedidos</span>
+      </NavLink>
     </aside>
   );
 }
