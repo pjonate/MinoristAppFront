@@ -6,7 +6,12 @@
 }
 
 .pedido-form-modal {
-  width: min(560px, calc(100vw - 32px));
+  width: min(82vw, 980px);
+  max-width: calc(100vw - 32px);
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  padding: clamp(1.25rem, 3vw, 2rem);
+  text-align: left;
 }
 
 .pedido-product-results {
@@ -51,4 +56,17 @@
   padding: 12px;
   color: #6c757d;
   text-align: center;
+}
+
+@media (max-width: 768px) {
+  .pedido-form-modal {
+    width: calc(100vw - 24px);
+    max-width: none;
+    max-height: calc(100vh - 24px);
+    padding: 1rem;
+  }
+
+  .pedido-product-results {
+    max-height: 180px;
+  }
 }
