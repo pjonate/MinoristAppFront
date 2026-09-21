@@ -9,14 +9,28 @@ const initialForm = {
   observaciones: "",
 };
 
-export const PedidoFormModal = ({ open, products, loading, onClose, onSave }) => {
+const initialNewProduct = {
+  codigo: "",
+  categoria: "",
+  descripcion: "",
+  proveedor: "",
+  precio: "",
+  stock: 0,
+};
+
+export const PedidoFormModal = ({ open, products, loading, onClose, onSave, onCreateProduct }) => {
   const [form, setForm] = useState(initialForm);
+  const [newProduct, setNewProduct] = useState(initialNewProduct);
   const [productQuery, setProductQuery] = useState("");
+  const [creatingProduct, setCreatingProduct] = useState(false);
+  const [showNewProduct, setShowNewProduct] = useState(false);
 
   useEffect(() => {
     if (open) {
       setForm(initialForm);
+      setNewProduct(initialNewProduct);
       setProductQuery("");
+      setShowNewProduct(false);
     }
   }, [open]);
 
@@ -49,6 +63,11 @@ export const PedidoFormModal = ({ open, products, loading, onClose, onSave }) =>
     }
   };
 
+  const handleNewProductChange = (event) => {
+    const { name, value } = event.target;
+    setNewProduct((current) => ({ ...current, [name]: value }));
+  };
+
   const selectProduct = (product) => {
     setForm((current) => ({
       ...current,
@@ -56,13 +75,49 @@ export const PedidoFormModal = ({ open, products, loading, onClose, onSave }) =>
       proveedor: product.proveedor || "",
     }));
     setProductQuery(`${product.codigo || ""} ${product.descripcion}`.trim());
+    setShowNewProduct(false);
+  };
+
+  const startNewProduct = () => {
+    setShowNewProduct(true);
+    setForm((current) => ({ ...current, id_producto: "" }));
+    setNewProduct((current) => ({
+      ...current,
+      descripcion: productQuery.trim(),
+    }));
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    let productId = form.id_producto;
+
+    if (!productId && showNewProduct) {
+      setCreatingProduct(true);
+
+      try {
+        const createdProduct = await onCreateProduct({
+          ...newProduct,
+          precio: Number(newProduct.precio),
+          stock: 0,
+        });
+        productId = createdProduct.id;
+        setForm((current) => ({
+          ...current,
+          id_producto: String(productId),
+          proveedor: newProduct.proveedor,
+        }));
+      } catch {
+        return;
+      } finally {
+        setCreatingProduct(false);
+      }
+    }
+
+    if (!productId) return;
+
     await onSave({
       ...form,
-      id_producto: Number(form.id_producto),
+      id_producto: Number(productId),
       cantidad: Number(form.cantidad),
     });
   };
@@ -100,12 +155,48 @@ export const PedidoFormModal = ({ open, products, loading, onClose, onSave }) =>
                 <small>Stock: {product.stock}</small>
               </button>
             )) : (
-              <div className="pedido-product-empty">No se encontraron productos.</div>
+              <div className="pedido-product-empty">
+                <div>No se encontraron productos.</div>
+                <button type="button" className="btn btn-sm btn-outline-primary mt-2" onClick={startNewProduct}>
+                  Registrar nuevo producto
+                </button>
+              </div>
             )}
           </div>
 
+          {showNewProduct && (
+            <div className="pedido-new-product mt-3">
+              <div className="d-flex justify-content-between align-items-center mb-2">
+                <strong>Registrar producto nuevo</strong>
+                <button type="button" className="btn btn-sm btn-link" onClick={() => setShowNewProduct(false)}>Cancelar</button>
+              </div>
+              <div className="row g-3">
+                <div className="col-md-6">
+                  <label className="form-label">Código</label>
+                  <input className="form-control" name="codigo" value={newProduct.codigo} onChange={handleNewProductChange} required />
+                </div>
+                <div className="col-md-6">
+                  <label className="form-label">Nombre del producto</label>
+                  <input className="form-control" name="descripcion" value={newProduct.descripcion} onChange={handleNewProductChange} required />
+                </div>
+                <div className="col-md-6">
+                  <label className="form-label">Categoría</label>
+                  <input className="form-control" name="categoria" value={newProduct.categoria} onChange={handleNewProductChange} required />
+                </div>
+                <div className="col-md-6">
+                  <label className="form-label">Precio</label>
+                  <input className="form-control" name="precio" type="number" min="0" step="0.01" value={newProduct.precio} onChange={handleNewProductChange} required />
+                </div>
+                <div className="col-md-6">
+                  <label className="form-label">Proveedor</label>
+                  <input className="form-control" name="proveedor" value={newProduct.proveedor} onChange={handleNewProductChange} required />
+                </div>
+              </div>
+            </div>
+          )}
+
           <label className="form-label mt-3">O seleccionar de la lista completa</label>
-          <select className="form-select mb-3" name="id_producto" value={form.id_producto} onChange={handleChange} required>
+          <select className="form-select mb-3" name="id_producto" value={form.id_producto} onChange={handleChange} required={!showNewProduct}>
             <option value="">Seleccionar producto</option>
             {products.map((product) => (
               <option key={product.id} value={product.id}>
@@ -135,8 +226,8 @@ export const PedidoFormModal = ({ open, products, loading, onClose, onSave }) =>
 
           <div className="d-flex justify-content-end gap-2">
             <button type="button" className="btn btn-secondary" onClick={onClose} disabled={loading}>Cancelar</button>
-            <button type="submit" className="btn btn-primary" disabled={loading || !products.length}>
-              {loading ? "Guardando..." : "Crear pedido"}
+            <button type="submit" className="btn btn-primary" disabled={loading || creatingProduct || (showNewProduct ? !newProduct.codigo || !newProduct.descripcion || !newProduct.categoria || !newProduct.proveedor || newProduct.precio === "" : !form.id_producto)}>
+              {creatingProduct ? "Registrando producto..." : loading ? "Guardando..." : "Crear pedido"}
             </button>
           </div>
         </form>

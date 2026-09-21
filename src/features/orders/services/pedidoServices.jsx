@@ -42,6 +42,13 @@ export const getProductsForPedidoService = (token) =>
     headers: { Authorization: `Bearer ${token}` },
   });
 
+export const createProductForPedidoService = (product, token) =>
+  request("/product", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+    body: JSON.stringify(product),
+  });
+
 export const createPedidoService = (pedido, token) =>
   request("/pedidos", {
     method: "POST",

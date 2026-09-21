@@ -9,7 +9,7 @@ import "../styles/pedidos.css";
 export const PedidosPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { addToast } = useToast();
-  const { pedidos, products, loading, saving, error, createPedido, generateInventory } = usePedidos();
+  const { pedidos, products, loading, saving, error, createPedido, createProduct, generateInventory } = usePedidos();
 
   const handleCreate = async (pedido) => {
     try {
@@ -20,6 +20,8 @@ export const PedidosPage = () => {
       addToast({ type: "danger", message: requestError.message, duration: 5000 });
     }
   };
+
+  const handleCreateProduct = (product) => createProduct(product);
 
   const handleGenerateInventory = async (pedido) => {
     try {
@@ -48,7 +50,14 @@ export const PedidosPage = () => {
         <PedidosTable pedidos={pedidos} loading={loading} onGenerateInventory={handleGenerateInventory} />
       </section>
 
-      <PedidoFormModal open={isModalOpen} products={products} loading={saving} onClose={() => setIsModalOpen(false)} onSave={handleCreate} />
+      <PedidoFormModal
+        open={isModalOpen}
+        products={products}
+        loading={saving}
+        onClose={() => setIsModalOpen(false)}
+        onSave={handleCreate}
+        onCreateProduct={handleCreateProduct}
+      />
     </div>
   );
 };

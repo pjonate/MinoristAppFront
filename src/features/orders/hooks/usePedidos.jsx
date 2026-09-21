@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "../../context/authContext";
 import {
   createPedidoService,
+  createProductForPedidoService,
   generateInventoryService,
   getPedidosService,
   getProductsForPedidoService,
@@ -61,6 +62,27 @@ export const usePedidos = () => {
     }
   };
 
+  const createProduct = async (product) => {
+    setSaving(true);
+    setError("");
+
+    try {
+      const response = await createProductForPedidoService(product, token);
+
+      if (!response?.product) {
+        throw new Error("El servidor no devolvió el producto creado");
+      }
+
+      setProducts((current) => [...current, response.product]);
+      return response.product;
+    } catch (requestError) {
+      setError(requestError.message);
+      throw requestError;
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const generateInventory = async (pedidoId) => {
     setError("");
 
@@ -88,6 +110,7 @@ export const usePedidos = () => {
     saving,
     error,
     createPedido,
+    createProduct,
     generateInventory,
     reload: loadData,
   };
