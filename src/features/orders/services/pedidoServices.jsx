@@ -2,12 +2,12 @@ const API_URL = process.env.REACT_APP_API_URL || "/api";
 
 async function request(path, options = {}) {
   const response = await fetch(`${API_URL}${path}`, {
+    ...options,
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json",
       ...options.headers,
     },
-    ...options,
   });
 
   const responseText = await response.text();
