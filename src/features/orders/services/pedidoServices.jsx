@@ -1,4 +1,4 @@
-const API_URL = process.env.REACT_APP_API_URL;
+const API_URL = process.env.REACT_APP_API_URL || "/api";
 
 async function request(path, options = {}) {
   const response = await fetch(`${API_URL}${path}`, {
@@ -10,13 +10,23 @@ async function request(path, options = {}) {
     ...options,
   });
 
-  const contentType = response.headers.get("content-type") || "";
-  const data = contentType.includes("application/json")
-    ? await response.json()
-    : null;
+  const responseText = await response.text();
+  let data = null;
+
+  if (responseText) {
+    try {
+      data = JSON.parse(responseText);
+    } catch {
+      data = null;
+    }
+  }
 
   if (!response.ok) {
     throw new Error(data?.message || data?.error || "No se pudo completar la solicitud");
+  }
+
+  if (data === null) {
+    throw new Error("El servidor devolvió una respuesta vacía o no válida");
   }
 
   return data;

@@ -46,6 +46,11 @@ export const usePedidos = () => {
 
     try {
       const response = await createPedidoService(pedido, token);
+
+      if (!response?.pedido) {
+        throw new Error("El servidor no devolvió el pedido creado");
+      }
+
       setPedidos((current) => [response.pedido, ...current]);
       return response.pedido;
     } catch (requestError) {
@@ -61,6 +66,11 @@ export const usePedidos = () => {
 
     try {
       const response = await generateInventoryService(pedidoId, token);
+
+      if (!response?.pedido) {
+        throw new Error("El servidor no devolvió el pedido actualizado");
+      }
+
       setPedidos((current) => current.map((pedido) => (
         pedido.id_pedido === pedidoId ? response.pedido : pedido
       )));
